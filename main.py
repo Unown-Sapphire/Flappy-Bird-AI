@@ -1,1 +1,1 @@
-#gon be the bowling AI
+from fastai.vision.all import *
