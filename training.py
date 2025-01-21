@@ -7,10 +7,20 @@ import mouse
 import csv
 import PIL.ImageOps
 from PIL import Image
+import os
+
+def remove_file(folder):
+    for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 sleepytime = 0.041666666666666664
 def dataCollection():
-    count = 0
+    count = 2201
     click_detected = False
 
     def on_click():
@@ -24,7 +34,7 @@ def dataCollection():
             sys.exit()
         count += 1
         time.sleep(sleepytime)
-        image = gui.screenshot(region=[150, 200, 1000, 600])
+        image = gui.screenshot(region=[480, 240, 380, 580])
         image_path = f"unmodified_photos\\photo{count}.png"
         image.save(image_path)
 
@@ -34,27 +44,22 @@ def dataCollection():
 
         # Save processed frame
         processed_frame_name = f'unmodified_photos\\photo{count}.png'
-        cv2.imwrite(f'modified_photos\\photo{count}.png', edges)
 
         with open("dataset.csv", mode="a", newline='\n') as data:
             fieldnames = ['photo', 'label']
             writer = csv.DictWriter(data, fieldnames=fieldnames)
 
             if click_detected:
-                writer.writerow({"photo": processed_frame_name, "label": 1})
+                writer.writerow({"photo": processed_frame_name, "label": "click"})
+                cv2.imwrite(f'modified_photos\\click\\photo{count}.png', edges)
                 click_detected = False
             else:
-                writer.writerow({"photo": processed_frame_name, "label": 0})
+                writer.writerow({"photo": processed_frame_name, "label": "do_nothing"})
+                cv2.imwrite(f'modified_photos\\do_nothing\\photo{count}.png', edges)
 
 while True:
     if keyboard.is_pressed("R"):
-        import os, shutil
-        folder = r"unmodified_photos"
-        for filename in os.listdir(folder):
-            file_path = os.path.join(folder, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.remove(file_path)
-            except Exception as e:
-                print('Failed to delete %s. Reason: %s' % (file_path, e))
+        remove_file("unmodified_photos")
+        # remove_file("modified_photos\\click")
+        # remove_file("modified_photos\\do_nothing")
         dataCollection()
