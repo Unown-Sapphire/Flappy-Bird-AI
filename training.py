@@ -20,7 +20,7 @@ def remove_file(folder):
 
 sleepytime = 0.041666666666666664
 def dataCollection():
-    count = 2201
+    count = 5648
     click_detected = False
 
     def on_click():
@@ -63,3 +63,5 @@ while True:
         # remove_file("modified_photos\\click")
         # remove_file("modified_photos\\do_nothing")
         dataCollection()
+
+
